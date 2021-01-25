@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo, useState } from 'react';
 import './App.css';
 
 //Redux
@@ -13,74 +13,123 @@ import Score from './components/score/Score'
 //Styles
 import {GlobalStyle, Container } from './Globalstyle';
 
-
 function App() {
   //Initialize Hooks
   const dispatch = useDispatch();  
-  const PlayerSelected = useSelector((state: StoreState) => state.game.isSelected1)
-  const IASelected = useSelector((state: StoreState) => state.game.isSelected2)
+  const Jogaveis = useMemo(() => ['rock', 'paper', 'scissor'], [])
 
-  useSelector((state: StoreState) => {
-    play(state)
-  })
+  //Global States
+  const GLOBAL_STATES = useSelector((states: StoreState) =>  states.game)
 
-  async function play(state: StoreState){
-    if(state.game.isSelected1){
-        let select = ''
-        const data = ['rock', 'paper', 'scissor']
+  const PLAYER_SELECTED = useSelector((states: StoreState) => 
+     states.game.isSelected1
+  )
+  const COMPUTER_SELECTED = useSelector((states: StoreState) => 
+    states.game.isSelected2
+  )
 
-        //def J2
-        if(!state.game.isSelected2){
-          do{
-            for(let i = 0; i < Math.floor(Math.random() * 100 + 10); i++){
-              const random = Math.floor(Math.random() * 3 + 0) 
-              select = data[random]
-            }
-          }
-          while(select === undefined)
-          dispatch(isSelected2({selected2: select })) 
-        }
-        
-        setTimeout(() => {
-            if(state.game.isSelected1 === select) alert('Empate')
-        
-            const [rock, paper, scissor] = data
-        
-            const rules = [
-                //winner | Loser
-                [rock, scissor],
-                [paper, rock],
-                [scissor, paper]
-            ]
-            
-            rules.forEach(element => {
-                if(state.game.isSelected1 === element[0] && select === element[1]){
-                  alert('Player Ganhou!')
-                  dispatch(Score1({score: state.game.Score1 +1 }))
-                }  
-                if(state.game.isSelected1 === element[1] && select === element[0]){
-                  alert('Computador Ganhou!')
-                  dispatch(Score2({score: state.game.Score2 +1 }))
-                }  
-            })
+  //States
+  const [Execution, setExecution] = useState(false)
 
-            //
-            setTimeout(() =>{
-                dispatch(isSelected1({selected1: '' }))
-                dispatch(isSelected2({selected2: '' }))
-            },600)
-        }, 1000)
+  //My functions
+  async function play(): Promise<void> {
+    if(!Execution){
+      setExecution(true)
+      await defComputer()
+      await checkWhoWinner(GLOBAL_STATES.isSelected1, GLOBAL_STATES.isSelected2)
+      await clearExecution()
     }
   }
+
+  async function defComputer(){
+    if(!GLOBAL_STATES.isSelected2){
+      let select = ''
+      for(let i = 0; i < RandomNumber(25, 1000); i++){ 
+        select = Jogaveis[RandomNumber(0, 3)]
+      }
+      dispatch(isSelected2({selected2: select })) 
+    }
+  }
+
+  function RandomNumber(min: number, max: number): number{
+    return (Math.floor(Math.random() * max + min))
+  }
+
+  async function checkWhoWinner(PlayerSelectd: string, ComputerSelectd: string){
+    if(GLOBAL_STATES.isSelected1 && GLOBAL_STATES.isSelected2){
+      const [rock, paper, scissor] = Jogaveis
+      const rules = [
+          //winner | Loser
+          [rock, scissor],
+          [paper, rock],
+          [scissor, paper]
+      ]
+
+      if(PlayerSelectd === ComputerSelectd) {
+        setScore('')
+      }
+      else{
+        rules.forEach(element => {
+          if(PlayerSelectd === element[0] && ComputerSelectd === element[1]){
+            setScore('player')
+          }  
+          if(PlayerSelectd === element[1] && ComputerSelectd === element[0]){
+            setScore('computer')
+          }  
+        }) 
+      }
+    }
+  }
+
+  function setScore(who: string){
+    const [PlayerScore, ComputerScore] = getScore()
+
+    switch (who){
+      case 'player':
+        alert('Player Ganhou!')
+        dispatch(Score1({score: PlayerScore + 1 }))
+        break
+      case 'computer':
+        alert('Computador Ganhou!')
+        dispatch(Score2({score: ComputerScore + 1 }))
+        break
+      default:
+        alert('Empate')
+        break
+    }
+  }
+
+  function getScore(): number[]{
+    let PlayerScore = GLOBAL_STATES.Score1 ? GLOBAL_STATES.Score1 : 0 
+    let ComputerScore = GLOBAL_STATES.Score2 ? GLOBAL_STATES.Score2 : 0
+    return [PlayerScore, ComputerScore]
+  }
+
+  async function clearExecution(){
+    const TIME_START = 1000 
+    setTimeout(() =>{
+      dispatch(isSelected1({selected1: '' }))
+      dispatch(isSelected2({selected2: '' }))
+      setExecution(false)
+    },TIME_START)
+  }
+
+  GLOBAL_STATES.isSelected1 !== '' && !Execution && play() 
 
   return (
     <Container className="App">
       <GlobalStyle />
       <h1>Jokenpô</h1>
       <div className='windowGame'>
-        <Display isSelected={PlayerSelected} />
+        <Display 
+          display = 'player' 
+          isSelected = {PLAYER_SELECTED} 
+        />
         <Score/>
-        <Display isComputer={true} isSelected={IASelected} />
+        <Display 
+          display='computer' 
+          isSelected = {COMPUTER_SELECTED} 
+        />
       </div>
     </Container>
   );

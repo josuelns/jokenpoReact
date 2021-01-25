@@ -6,34 +6,53 @@ import {StyledDisplay} from './style'
 import { useDispatch } from 'react-redux';
 import { isSelected1 } from '../../store/modules/game/actions';
 
+//Interfaces
 interface MyProps{
-    isComputer?: boolean
+    display: string
     isSelected: string
 }
 
-const Display: React.FC<MyProps> = ({isComputer = false, isSelected = ''}) => {
+const Display: React.FC<MyProps> = ({display, isSelected}) => {
+    //Initialize Hooks
     const dispatch = useDispatch();
-
-    function handleClick(option: string){
-        if(option === 'rock'){
-            dispatch(isSelected1({selected1: option }))
-        }
-        if(option === 'paper'){
-            dispatch(isSelected1({selected1: option }))
-        }
-        if(option === 'scissor'){
-            dispatch(isSelected1({selected1: option }))
-        }
-        if(option === ''){  
-            dispatch(isSelected1({selected1: option }))
-        }
+    
+    //My functions
+    function handleClick(option: 'rock' |'paper'| 'scissor'){
+        dispatch(isSelected1({selected1: option }))
     }
 
     return (
-        <StyledDisplay className={!isComputer ? 'DisplayUser' : 'DisplayComputer'}>
-            <img src='http://localhost:3000/assents/img/pedra.png'   className={isSelected=== 'rock' ? 'active' : ''  }    onClick={()=> !isComputer && handleClick('rock')} alt='Pedra' />
-            <img src='http://localhost:3000/assents/img/papel.png'   className={isSelected === 'paper' ? 'active' : '' }   onClick={()=> !isComputer && handleClick('paper')} alt='Papel'/>
-            <img src='http://localhost:3000/assents/img/tesoura.png' className={isSelected === 'scissor' ? 'active' : ''}  onClick={()=> !isComputer  && handleClick('scissor')} alt='Tesoura'/>
+        <StyledDisplay className={`Display_${display}`}>
+            <img 
+                src = 'http://localhost:3000/assents/img/pedra.png'   
+                className = {
+                    isSelected === 'rock' ? 'active' : ''  
+                }  
+                onClick = {
+                    ()=> display === 'player' && handleClick('rock')
+                }    
+                alt='Pedra' 
+            />
+            <img 
+                src = 'http://localhost:3000/assents/img/papel.png'
+                className = {
+                    isSelected === 'paper' ? 'active' : '' 
+                }  
+                onClick = {
+                    ()=> display === 'player' && handleClick('paper')
+                }   
+                alt = 'Papel'
+            />
+            <img 
+                src = 'http://localhost:3000/assents/img/tesoura.png' 
+                className = { 
+                    isSelected  === 'scissor' ? 'active' : ''
+                } 
+                onClick = {
+                    ()=> display === 'player' && handleClick('scissor')
+                } 
+                alt='Tesoura'
+            />
         </StyledDisplay>
     )
 }

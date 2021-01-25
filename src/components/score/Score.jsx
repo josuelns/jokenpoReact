@@ -11,6 +11,7 @@ import { StoreState } from '../../store/createStore';
 function Score(props){
   const PlayerScore = useSelector((state: StoreState) => state.game.Score1)
   const IAScore = useSelector((state: StoreState) => state.game.Score2)
+  
   return (
       <StyledScore>
         <section>

@@ -18,7 +18,7 @@ export const StyledDisplay = styled.div`
         transition: 1s;    
     }
 
-    &.DisplayUser img:hover {
+    &.Display_player img:hover {
         transform: rotate(5deg);
         background: rgb(204 204 204 / 85%);
         border: 3px solid #000;
