@@ -5,10 +5,8 @@ export interface StoreState {
   game: Game;
 }
 
-export type StoreAction = AuthAction | ThemeAction;
-
 const STORE = (
-  reducers: Reducer<StoreState, StoreAction>
+  reducers: Reducer<StoreState>
 ) => {
   return createStore(reducers);
 };

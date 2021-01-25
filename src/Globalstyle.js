@@ -13,6 +13,7 @@ export const GlobalStyle = createGlobalStyle`
       color: white;
       margin: 15px 0px;
       font-size: 40px;
+      text-align: center;
     }
 
     h3,p, svg{

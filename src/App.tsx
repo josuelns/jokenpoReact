@@ -1,5 +1,5 @@
+//Default imports
 import React, {useMemo, useState } from 'react';
-import './App.css';
 
 //Redux
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,13 +20,6 @@ function App() {
 
   //Global States
   const GLOBAL_STATES = useSelector((states: StoreState) =>  states.game)
-
-  const PLAYER_SELECTED = useSelector((states: StoreState) => 
-     states.game.isSelected1
-  )
-  const COMPUTER_SELECTED = useSelector((states: StoreState) => 
-    states.game.isSelected2
-  )
 
   //States
   const [Execution, setExecution] = useState(false)
@@ -83,7 +76,6 @@ function App() {
 
   function setScore(who: string){
     const [PlayerScore, ComputerScore] = getScore()
-
     switch (who){
       case 'player':
         alert('Player Ganhou!')
@@ -123,12 +115,12 @@ function App() {
       <div className='windowGame'>
         <Display 
           display = 'player' 
-          isSelected = {PLAYER_SELECTED} 
+          isSelected = {GLOBAL_STATES.isSelected1} 
         />
         <Score/>
         <Display 
           display='computer' 
-          isSelected = {COMPUTER_SELECTED} 
+          isSelected = {GLOBAL_STATES.isSelected2} 
         />
       </div>
     </Container>
